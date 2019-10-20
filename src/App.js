@@ -9,14 +9,22 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import './App.css';
 
+/*
+const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
+const OWM_TOKEN = process.env.OWN_TOKEN;
+*/
 
-const MAPBOX_TOKEN='pk.eyJ1IjoicnBzY3J1eiIsImEiOiJjanloOHFtMXQwOWNlM29tYmxiZmRheGMzIn0.Yi7GtAEpaiy_Bts3TWfgNg';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoicnBzY3J1eiIsImEiOiJjanloOHFtMXQwOWNlM29tYmxiZmRheGMzIn0.Yi7GtAEpaiy_Bts3TWfgNg';
+const OWM_TOKEN = '4f71680207ab219c46cc73526379dee8';
 
 const geolocateStyle = {
   float: 'left',
   margin: '50px',
   padding: '10px'
 };
+
+const delayInterval = 1000;
+var lastCalled = new Date().getTime() - delayInterval;
 
 class App extends React.Component {
    constructor(props) {
@@ -29,6 +37,8 @@ class App extends React.Component {
         lon: 0,
         weather: '',
         temp: 30,
+        sunrise: '',
+        sunset: '',
         viewport: {
           width: 500,
           height: 500,
@@ -38,19 +48,18 @@ class App extends React.Component {
         },
           searchResultLayer: null,
           icon: process.env.PUBLIC_URL + '/assets/sunny.svg',
-          alt: 'sunny'
+          alt: 'search the map to find out!'
       }
 
       this.updateState = this.updateState.bind(this);
       this.updateIcon = this.updateIcon.bind(this);
    };
 
-  componentDidMount() {
-    this.updateState();
-    this.updateIcon();
-  }
-
-  updateState() {
+  updateState(called) {
+    var delay = new Date().getTime() - called;
+    if (delay > delayInterval ) {
+      console.log("[DEBUG] Delay sufficient.");
+      console.log(new Date().getTime())
       let currentComponent = this;
       var lat = currentComponent.state.viewport.latitude;
       var lon = currentComponent.state.viewport.longitude;
@@ -58,66 +67,109 @@ class App extends React.Component {
         params: {
           lat: lat,
           lon: lon,
-          appid: "4f71680207ab219c46cc73526379dee8"
+          appid: OWM_TOKEN
         }
       })
       .then(function (response) {
-        // console.log(response.data)
+        console.log(response.data)
         currentComponent.setState({
           name: response.data.name,
           lat: response.data.coord.lat,
           lon: response.data.coord.lon,
           weather: response.data.weather[0].description,
+          sunset: response.data.sys.sunset,
+          sunrise: response.data.sys.sunrise,
           temp : (response.data.main.temp - 273.15).toFixed(2)
 
         });
+        // console.log("[DEBUG] Weather was" + currentComponent.state.weather);
+        currentComponent.updateIcon();
       })
       .catch(function (error) {
         console.log(error);
-      }); 
-      this.updateIcon();
-   }
+      });
+      
+    } else {
+      // console.log("[DEBUG] Still waiting for: "+ delay/delayInterval);
+    }
+    
+  };
+   
 
-   updateIcon() {
+  updateIcon() {
     var weather = this.state.weather;
+
+    var sunrise = this.state.sunrise;
+    var sunset = this.state.sunset;
     var newIcon, newAlt = null;
 
-    console.log("Weather was " + weather)
     switch(weather) {
-      case "thunderstorms":
+      case "thunderstorm":
         newIcon = '/assets/thunderstorms.svg';
         newAlt = 'thunderstorms';
         break;
       case "overcast clouds":
-        newIcon = '/assets/cloudy.svg';
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset) {
+          newIcon = '/assets/cloudy.svg';
+        } else {
+          newIcon = '/assets/cloudy-night.svg';
+        }
         newAlt = 'cloudy';
         break;
       case "scattered clouds":
-        newIcon = '/assets/partly-sunny.svg';
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/partly-sunny.svg';
+        else 
+          newIcon = '/assets/cloudy-night.svg';
+        
         newAlt = 'significantly cloudy';
         break;
       case "broken clouds":
       case "few clouds":
-        newIcon = '/assets/partly-cloudy.svg';
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/partly-cloudy.svg';
+        else
+          newIcon = '/assets/partly-cloudy-night.svg';
         newAlt = 'a little cloudy';
         break;
       case "light rain":
-        newIcon = '/assets/sun-rain.svg';
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/sun-rain.svg';
+        else
+          newIcon = '/assets/rainy-night.svg';
+        newAlt = 'a little rain';
+        
+        break;
+      case "shower rain":
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/rainy.svg';
+        else
+          newIcon = '/assets/rainy-night.svg';
+        newAlt = 'rain showers';
+        break;
+      case "moderate rain":
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/sun-rain.svg';
+        else
+          newIcon = '/assets/rainy-night.svg';
         newAlt = 'a little rain';
         break;
       case "clear sky":
-      default:
-        newIcon = '/assets/sunny.svg'
+        if (new Date().getTime() > sunrise && new Date().getTime() < sunset)
+          newIcon = '/assets/sunny.svg'
+        else
+          newIcon = '/assets/clear-night.svg'
         newAlt = 'a clear sky';
         break;
+      default:
+        break;
     }
-
     this.setState({
-      icon: process.env.PUBLIC_URL + newIcon,
+      icon: newIcon,
       alt: newAlt
     });
-    console.log(newIcon);
-   }
+    lastCalled = new Date().getTime();
+  }
 
   mapRef = React.createRef();
 
@@ -125,11 +177,11 @@ class App extends React.Component {
     this.setState({
       viewport: { ...this.state.viewport, ...viewport }
     });
-    this.updateState();
+    this.updateState(lastCalled);
   };
 
   handleGeocoderViewportChange = viewport => {
-    const geocoderDefaultOverrides = { transitionDuration: 1000 };
+    const geocoderDefaultOverrides = { transitionDuration: 0};
 
     return this.handleViewportChange({
       ...viewport,
@@ -138,7 +190,7 @@ class App extends React.Component {
   };
 
   handleOnResult = event => {
-    console.log(event.result);
+    // console.log([DEBUG] event.result);
     this.setState({
       searchResultLayer: new GeoJsonLayer({
         id: "search-result",
@@ -153,7 +205,7 @@ class App extends React.Component {
 
   onSelected = (viewport, item) => {
     this.setState({viewport});
-    console.log('Selected: ', item)
+    // console.log([DEBUG] 'Selected: ', item)
   }
 
   render() {
@@ -162,12 +214,9 @@ class App extends React.Component {
       <div style={{ height: "75vh" }}>
         <span id="text">
           <h1> Kumusta na dyan? </h1>
-          <h2> If God/any cosmic being were to check out the Philippines right now, what would they see? It's time to find out! </h2>
+          <h2> Check out the weather at different parts of the Philippines! </h2>
 
-          <p> The weather here is: dsad {this.state.weather} </p>
-          <img 
-            src={this.state.icon}
-            alt={this.state.alt}/> 
+          <p> The weather here is: {this.state.alt} </p>
         </span>
 
         <span>
@@ -192,8 +241,9 @@ class App extends React.Component {
               layers={[searchResultLayer]} 
             />
             <img 
-            src={this.state.icon}
-            alt={this.state.alt}/> 
+              src={this.state.icon}
+              alt={this.state.alt}
+            /> 
           </MapGL>
         </span>
       </div>

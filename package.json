@@ -6,6 +6,7 @@
     "@mapbox/mapbox-gl-directions": "github:mapbox/mapbox-gl-directions",
     "core-js": "^3.3.2",
     "deck.gl": "^7.3.3",
+    "ee-class": "^1.4.0",
     "mapbox": "^1.0.0-beta10",
     "mapbox-gl": "^0.47.0",
     "react": "^16.9.0",
@@ -18,6 +19,7 @@
     "react-native": "^0.61.2",
     "react-native-mapbox-gl": "^5.2.1-deprecated",
     "react-scripts": "3.2.0",
+    "request-rate-limiter": "^2.0.1",
     "typescript": "^3.6.4"
   },
   "scripts": {
