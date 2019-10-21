@@ -12,10 +12,6 @@ import './App.css';
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const OWM_TOKEN = process.env.REACT_APP_OWN_TOKEN;
 
-/*
-const MAPBOX_TOKEN = 'pk.eyJ1IjoicnBzY3J1eiIsImEiOiJjanloOHFtMXQwOWNlM29tYmxiZmRheGMzIn0.Yi7GtAEpaiy_Bts3TWfgNg';
-const OWM_TOKEN = '4f71680207ab219c46cc73526379dee8';
-*/ 
 
 const geolocateStyle = {
   float: 'left',
