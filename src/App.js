@@ -8,13 +8,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import './App.css';
 
-/*
-const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
-const OWM_TOKEN = process.env.OWN_TOKEN;
-*/ 
 
+const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+const OWM_TOKEN = process.env.REACT_APP_OWN_TOKEN;
+
+/*
 const MAPBOX_TOKEN = 'pk.eyJ1IjoicnBzY3J1eiIsImEiOiJjanloOHFtMXQwOWNlM29tYmxiZmRheGMzIn0.Yi7GtAEpaiy_Bts3TWfgNg';
 const OWM_TOKEN = '4f71680207ab219c46cc73526379dee8';
+*/ 
 
 const geolocateStyle = {
   float: 'left',
@@ -210,17 +211,20 @@ class App extends React.Component {
     var { viewport, searchResultLayer } = this.state;
     return (
 
+      <body>
       <div 
         class = "container">
         <div class="sidebar">
-          <h1> Kumusta na dyan? </h1>
-          <h2> Check out the weather at different parts of the Philippines! </h2>
+          <div class="text">
+            <h1> Kumusta na dyan? </h1>
+            <h2>The weather here is: {this.state.alt} </h2>
 
-          <p> The weather here is: {this.state.alt} </p>
-          <img 
-            src={this.state.icon}
-            alt={this.state.alt}
-          /> 
+            <p>Search the map to check out the weather at different parts of the Philippines!</p>
+            <img 
+              src={this.state.icon}
+              alt={this.state.alt}
+            /> 
+          </div>
         </div>
 
         <div class="content">
@@ -248,6 +252,7 @@ class App extends React.Component {
           </MapGL>
         </div>
       </div>
+      </body>
     );
   }
 }

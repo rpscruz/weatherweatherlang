@@ -6,6 +6,7 @@
     "@mapbox/mapbox-gl-directions": "github:mapbox/mapbox-gl-directions",
     "core-js": "^3.3.2",
     "deck.gl": "^7.3.3",
+    "dotenv": "^8.2.0",
     "ee-class": "^1.4.0",
     "env-cmd": "^10.0.1",
     "express": "^4.17.1",
@@ -31,7 +32,8 @@
     "start": "react-scripts start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "eject": "react-scripts eject",
-    "dev": "webpack-dev-server --mode development --hot"
+    "dev": "webpack-dev-server --mode development --hot",
+    "build": "react-scripts build"
   },
   "resolutions": {
     "https-proxy-agent": "^3.0.0"
