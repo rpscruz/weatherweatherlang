@@ -17,12 +17,32 @@ code {
 
 
 div {
-  height: "75vh";
+  width: "100vw";
 }
 
-#text { 
-  text-align: center;
+.container { 
+  display:flex;
+  flex-wrap: wrap;
+  height: 100vh;
 }
+
+.sidebar (min-width: 150px;){ 
+  text-align: center;
+  flex: 1;
+  max-width: 150px;
+  max-width: 100px;
+  height: "25%";
+
+}
+
+.content {
+  min-width:300px;
+  height: 80%;
+  flex: 2;
+  overflow: auto;
+  height: "95vh";
+}
+
 
 h1 {
     font-family: 'Open Sans';
@@ -42,8 +62,20 @@ p {
 }
 
 img {
+  width:50%;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 20%;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 186px) {
+  .container { 
+    flex-direction: column; 
+  }
+
+  .sidebar (min-width: 150px;){ 
+    height: "10vh";
+  } 
+
 }

@@ -3,16 +3,15 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import MapGL, { GeolocateControl } from 'react-map-gl'
 import DeckGL, { GeoJsonLayer } from "deck.gl";
-import Geocoder from 'react-map-gl-geocoder'
-
-import 'mapbox-gl/dist/mapbox-gl.css'
+import Geocoder from 'react-map-gl-geocoder';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import './App.css';
 
 /*
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
 const OWM_TOKEN = process.env.OWN_TOKEN;
-*/
+*/ 
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoicnBzY3J1eiIsImEiOiJjanloOHFtMXQwOWNlM29tYmxiZmRheGMzIn0.Yi7GtAEpaiy_Bts3TWfgNg';
 const OWM_TOKEN = '4f71680207ab219c46cc73526379dee8';
@@ -98,9 +97,8 @@ class App extends React.Component {
 
   updateIcon() {
     var weather = this.state.weather;
-
-    var sunrise = this.state.sunrise;
-    var sunset = this.state.sunset;
+    var sunrise = this.state.sunrise * 1000;
+    var sunset = this.state.sunset * 1000;
     var newIcon, newAlt = null;
 
     switch(weather) {
@@ -211,15 +209,21 @@ class App extends React.Component {
   render() {
     var { viewport, searchResultLayer } = this.state;
     return (
-      <div style={{ height: "75vh" }}>
-        <span id="text">
+
+      <div 
+        class = "container">
+        <div class="sidebar">
           <h1> Kumusta na dyan? </h1>
           <h2> Check out the weather at different parts of the Philippines! </h2>
 
           <p> The weather here is: {this.state.alt} </p>
-        </span>
+          <img 
+            src={this.state.icon}
+            alt={this.state.alt}
+          /> 
+        </div>
 
-        <span>
+        <div class="content">
           <MapGL
             ref={this.mapRef}
             {...viewport}
@@ -240,12 +244,9 @@ class App extends React.Component {
             <DeckGL {...viewport} 
               layers={[searchResultLayer]} 
             />
-            <img 
-              src={this.state.icon}
-              alt={this.state.alt}
-            /> 
+            
           </MapGL>
-        </span>
+        </div>
       </div>
     );
   }
