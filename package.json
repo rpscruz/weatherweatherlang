@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "deck.gl": "^7.3.3",
-    "firebase": "^7.2.1",
+    "firebase": "^10.9.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-map-gl": "^5.0.12",
